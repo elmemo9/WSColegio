@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using WSColegio.Common;
+using WSColegio.Responses.Models;
 
 namespace WSColegio.Models
 {
@@ -82,6 +83,50 @@ namespace WSColegio.Models
             return false;
         }
 
+        public List<ItemList>? AlumnosList()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            List<ItemList> list = new();
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+                SqlTransaction sqlTransaction = connection.BeginTransaction();
+                try
+                {
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.Transaction = sqlTransaction;
+                        command.CommandText = "SELECT Id, CONCAT(Nombre, ' ', Apellidos) AS NombreCompleto FROM alumno WHERE Deleted = 0";
+
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var itemList = new ItemList()
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Nombre = reader.GetString(1),
+                                    
+                                };
+                                list.Add(itemList);
+                            }
+                            reader.Close();
+                            sqlTransaction.Commit();
+                            connection.Close();
+                            return list;
+                        }
+                    }
+                }
+                catch (Exception a)
+                {
+                    sqlTransaction.Rollback();
+                    connection.Close();
+                    return null;
+                }
+            }
+
+        }
         public int DeleteAlumno(int id)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -131,6 +176,7 @@ namespace WSColegio.Models
                             {
                                 command.CommandText += string.Format(" and {0} = @filter{1}", filter.Column, i.ToString());
                                 command.Parameters.AddWithValue("@filter" + i, filter.Value);
+                                i++;
                             }
                         }
 
@@ -266,6 +312,51 @@ namespace WSColegio.Models
             return false;
         }
 
+        public List<ItemList>? GradosList()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            List<ItemList> list = new();
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+                SqlTransaction sqlTransaction = connection.BeginTransaction();
+                try
+                {
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.Transaction = sqlTransaction;
+                        command.CommandText = "SELECT Id, Nombre FROM grado WHERE Deleted = 0";
+
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var itemList = new ItemList()
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Nombre = reader.GetString(1),
+
+                                };
+                                list.Add(itemList);
+                            }
+                            reader.Close();
+                            sqlTransaction.Commit();
+                            connection.Close();
+                            return list;
+                        }
+                    }
+                }
+                catch (Exception a)
+                {
+                    sqlTransaction.Rollback();
+                    connection.Close();
+                    return null;
+                }
+            }
+
+        }
+
         public int DeleteGradoAlumno(int id)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -315,6 +406,7 @@ namespace WSColegio.Models
                             {
                                 command.CommandText += string.Format(" and {0} = @filter{1}", filter.Column, i.ToString());
                                 command.Parameters.AddWithValue("@filter" + i, filter.Value);
+                                i++;
                             }
                         }
 
@@ -326,10 +418,11 @@ namespace WSColegio.Models
                                 {
                                     Id = reader.GetInt32(0),
                                     AlumnoId = reader.GetInt32(1),
-                                    GradoId = reader.GetInt32(2),
-                                    Seccion = reader.GetString(3),
-                                    AlumnoNombre = reader.GetString(4),
-                                    GradoNombre = reader.GetString(5)
+                                    AlumnoNombre = reader.GetString(2),
+                                    GradoId = reader.GetInt32(3),
+                                    GradoNombre = reader.GetString(4),
+                                    Seccion = reader.GetString(5)
+                                    
                                 };
                                 gradoAlumnos.Add(gradoAlumno);
                             }
@@ -501,6 +594,7 @@ namespace WSColegio.Models
                             {
                                 command.CommandText += string.Format(" and {0} = @filter{1}", filter.Column, i.ToString());
                                 command.Parameters.AddWithValue("@filter" + i, filter.Value);
+                                i++;
                             }
                         }
 
@@ -513,7 +607,7 @@ namespace WSColegio.Models
                                     Id = reader.GetInt32(0),
                                     Nombre = reader.GetString(1),
                                     ProfesorId = reader.GetInt32(2),
-                                    NombreProfesor = reader.GetString(3)
+                                    ProfesorNombre = reader.GetString(3)
                                 };
                                 grados.Add(grado);
                             }
@@ -635,6 +729,51 @@ namespace WSColegio.Models
             return false;
         }
 
+        public List<ItemList>? ProfesoresList()
+        {
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            List<ItemList> list = new();
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+                SqlTransaction sqlTransaction = connection.BeginTransaction();
+                try
+                {
+                    using (SqlCommand command = connection.CreateCommand())
+                    {
+                        command.Transaction = sqlTransaction;
+                        command.CommandText = "SELECT Id, CONCAT(Nombre, ' ', Apellidos) AS NombreCompleto FROM profesor WHERE Deleted = 0";
+
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var itemList = new ItemList()
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Nombre = reader.GetString(1),
+
+                                };
+                                list.Add(itemList);
+                            }
+                            reader.Close();
+                            sqlTransaction.Commit();
+                            connection.Close();
+                            return list;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    sqlTransaction.Rollback();
+                    connection.Close();
+                    return null;
+                }
+            }
+
+        }
+
         public int DeleteProfesor(int id)
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -687,6 +826,7 @@ namespace WSColegio.Models
                             {
                                 command.CommandText += string.Format(" and {0} = @filter{1}", filter.Column, i.ToString());
                                 command.Parameters.AddWithValue("@filter" + i, filter.Value);
+                                i++;
                             }
                         }
 

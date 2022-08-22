@@ -19,6 +19,7 @@ namespace WSColegio.Services
             if(message != string.Empty)
             {
                 response.Message = message;
+                response.Success = 2;
                 return response;
             }
 
@@ -90,6 +91,7 @@ namespace WSColegio.Services
             if (message != string.Empty)
             {
                 response.Message = message;
+                response.Success = 2;
                 return response;
             }
             if (!new DBContext(_configuration).GradoAlumnoExists(gradoAlumnoRequest.Id))
@@ -133,7 +135,7 @@ namespace WSColegio.Services
                 new Common.Filter(){ Column = "AlumnoId", Value = gradoAlumnoRequest.AlumnoId.ToString()},
                 new Common.Filter(){ Column = "GradoId", Value = gradoAlumnoRequest.GradoId.ToString()},
             });
-            if (gradoAlumnos != null && gradoAlumnos.Count > 0)
+            if (gradoAlumnos != null && (gradoAlumnos.Count > 0 && gradoAlumnos[0].Id != gradoAlumnoRequest.Id))
             {
                 message = "El alumno ya está en el grado";
 

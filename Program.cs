@@ -13,6 +13,7 @@ builder.Services.AddScoped<IAlumnoService, AlumnoService>();
 builder.Services.AddScoped<IGradoAlumnoService, GradoAlumnoService>();
 builder.Services.AddScoped<IGradoService, GradoService>();
 builder.Services.AddScoped<IProfesorService, ProfesorService>();
+builder.Services.AddScoped<IListService, ListService>();
 //Add CORS
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
